@@ -1,0 +1,61 @@
+# Virtual env
+.venv/
+venv/
+env/
+
+# Python cache/bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# IDE
+.idea/
+.vscode/
+
+# Django local/runtime
+db.sqlite3
+media/
+staticfiles/
+
+# Env/secrets
+.env
+.env.*
+!.env.example
+
+# Logs/temp
+*.log
+logs/
+tmp/
+temp/
+
+# Test/coverage/tool caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Jupyter checkpoints (if used)
+.ipynb_checkpoints/
+
+# ML artifacts (если генерируются локально)
+*.pt
+*.yaml
+*.pth
+*.onnx
+*.engine
+checkpoints/
+runs/
+wandb/
