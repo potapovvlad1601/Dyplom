@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="333ba607-ccbe-43a6-8e86-a85731fcab5e" name="Changes" comment="Rebuilt on new weight calc process">
-      <change afterPath="$PROJECT_DIR$/api/__init__.py" afterDir="false" />
+    <list default="true" id="333ba607-ccbe-43a6-8e86-a85731fcab5e" name="Changes" comment="Закрыли заглушку с весом.">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/api/cow_pipeline.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/cow_pipeline.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/tasks.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/tasks.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -14,7 +15,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="26" />
+    <option name="cachedIndexableFilesCount" value="30" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="FileTemplateManagerImpl">
@@ -77,10 +78,10 @@
 }</component>
   <component name="RecapSpentCounter">
     <option name="endsOfQuotaMs" value="1777654819321" />
-    <option name="spentUsd" value="0.0124142505" />
+    <option name="spentUsd" value="0.0336195" />
   </component>
   <component name="RecapUselessUpdatesCounter">
-    <option name="suspendCountdown" value="8" />
+    <option name="suspendCountdown" value="7" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -138,7 +139,9 @@
       <workItem from="1776972467934" duration="1164000" />
       <workItem from="1776974956674" duration="1666000" />
       <workItem from="1777021253118" duration="568000" />
-      <workItem from="1777313349557" duration="2218000" />
+      <workItem from="1777313349557" duration="2904000" />
+      <workItem from="1777316768004" duration="1297000" />
+      <workItem from="1777319775625" duration="596000" />
     </task>
     <task id="LOCAL-00001" summary="Алгоритм из оригинала">
       <option name="closed" value="true" />
@@ -164,7 +167,23 @@
       <option name="project" value="LOCAL" />
       <updated>1777314109788</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Закрыли заглушку с весом.">
+      <option name="closed" value="true" />
+      <created>1777315677723</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1777315677723</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Закрыли заглушку с весом.">
+      <option name="closed" value="true" />
+      <created>1777315704720</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1777315704720</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -185,6 +204,7 @@
     <MESSAGE value="Алгоритм из оригинала" />
     <MESSAGE value="Deleated redis and celery" />
     <MESSAGE value="Rebuilt on new weight calc process" />
-    <option name="LAST_COMMIT_MESSAGE" value="Rebuilt on new weight calc process" />
+    <MESSAGE value="Закрыли заглушку с весом." />
+    <option name="LAST_COMMIT_MESSAGE" value="Закрыли заглушку с весом." />
   </component>
 </project>

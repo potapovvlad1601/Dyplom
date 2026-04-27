@@ -8,7 +8,7 @@ from .sticker_utils import *
 from .utils import *
 
 
-def process_video(video_path, output_dir):
+def process_video(video_path, output_dir, progress_callback=None):
 
     os.makedirs(output_dir, exist_ok=True)
 
@@ -17,6 +17,7 @@ def process_video(video_path, output_dir):
     classifier = CowClassifier("models/yolo11l-cls.pt")
 
     cap = cv2.VideoCapture(video_path)
+    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
     cow_data = {}
     measurements = {}
@@ -29,6 +30,18 @@ def process_video(video_path, output_dir):
             break
 
         frame_idx += 1
+
+        if progress_callback and total_frames > 0:
+            progress = int((frame_idx / total_frames) * 100)
+
+            if frame_idx < total_frames * 0.3:
+                stage = "tracking"
+            elif frame_idx < total_frames * 0.7:
+                stage = "pose"
+            else:
+                stage = "finalizing"
+
+            progress_callback(progress, stage)
 
         results = tracker.track(frame)
         cows = tracker.get_cows(results)
