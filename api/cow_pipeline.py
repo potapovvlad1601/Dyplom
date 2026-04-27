@@ -12,9 +12,9 @@ def process_video(video_path, output_dir):
 
     os.makedirs(output_dir, exist_ok=True)
 
-    tracker = CowTracker("models/yolo_seg.pt", "models/botsort.yaml")
-    pose_model = PoseEstimator("models/yolo_pose.pt")
-    classifier = CowClassifier("models/yolo_cls.pt")
+    tracker = CowTracker("models/Yolo26l-seg.pt", "models/botsort_reid20.yaml")
+    pose_model = PoseEstimator("models/yolo26l-poseB2.pt")
+    classifier = CowClassifier("models/yolo11l-cls.pt")
 
     cap = cv2.VideoCapture(video_path)
 
