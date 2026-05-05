@@ -1,5 +1,6 @@
 import threading
 import uuid
+import os
 from .cow_pipeline import process_video
 
 TASKS = {}
@@ -10,16 +11,19 @@ def run_task(task_id, video_path):
         def progress_callback(progress, stage):
             update_progress(task_id, progress, stage)
 
-        result = process_video(
+        output_dir = os.path.join("media", "results", task_id)
+        result, annotated_video_path = process_video(
             video_path,
-            f"results/{task_id}",
+            output_dir,
             progress_callback=progress_callback
         )
 
         TASKS[task_id] = {
             "status": "done",
             "progress": 100,
-            "result": result
+            "result": result,
+            "video_path": annotated_video_path,
+            "video_url": f"/media/results/{task_id}/annotated.mp4"
         }
 
     except Exception as e:
