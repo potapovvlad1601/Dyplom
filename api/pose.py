@@ -2,8 +2,9 @@ from ultralytics import YOLO
 
 
 class PoseEstimator:
-    def __init__(self, model_path):
+    def __init__(self, model_path, device = "cpu"):
         self.model = YOLO(model_path)
+        self.device = device
 
     def get_keypoints(self, frame, bbox):
         x1, y1, x2, y2 = bbox
@@ -12,7 +13,7 @@ class PoseEstimator:
         if crop.size == 0:
             return {}
 
-        results = self.model.predict(crop, verbose=False)
+        results = self.model.predict(crop, device = self.device, verbose=False)
         keypoints = {}
 
         for r in results:

@@ -4,10 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="333ba607-ccbe-43a6-8e86-a85731fcab5e" name="Changes" comment="Закрыли заглушку с весом.">
+    <list default="true" id="333ba607-ccbe-43a6-8e86-a85731fcab5e" name="Changes" comment="progress bar added">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/classifier.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/classifier.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/api/cow_pipeline.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/cow_pipeline.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/tasks.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/tasks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/pose.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/pose.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/tracker.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/tracker.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -15,7 +18,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="30" />
+    <option name="cachedIndexableFilesCount" value="35" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="FileTemplateManagerImpl">
@@ -26,6 +29,11 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="LLMdev" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
@@ -141,7 +149,12 @@
       <workItem from="1777021253118" duration="568000" />
       <workItem from="1777313349557" duration="2904000" />
       <workItem from="1777316768004" duration="1297000" />
-      <workItem from="1777319775625" duration="596000" />
+      <workItem from="1777319775625" duration="736000" />
+      <workItem from="1777321584327" duration="38000" />
+      <workItem from="1777332553743" duration="135000" />
+      <workItem from="1777982691381" duration="158000" />
+      <workItem from="1777988990081" duration="3331000" />
+      <workItem from="1777992442077" duration="410000" />
     </task>
     <task id="LOCAL-00001" summary="Алгоритм из оригинала">
       <option name="closed" value="true" />
@@ -183,7 +196,15 @@
       <option name="project" value="LOCAL" />
       <updated>1777315704720</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="progress bar added">
+      <option name="closed" value="true" />
+      <created>1777320511865</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1777320511865</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -194,7 +215,19 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="LLMdev" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
@@ -205,6 +238,7 @@
     <MESSAGE value="Deleated redis and celery" />
     <MESSAGE value="Rebuilt on new weight calc process" />
     <MESSAGE value="Закрыли заглушку с весом." />
-    <option name="LAST_COMMIT_MESSAGE" value="Закрыли заглушку с весом." />
+    <MESSAGE value="progress bar added" />
+    <option name="LAST_COMMIT_MESSAGE" value="progress bar added" />
   </component>
 </project>

@@ -1,106 +1,144 @@
 import numpy as np
 
 
+# =====================
+# BASIC UTILS
+# =====================
 def pixel_distance(p1, p2):
     return np.linalg.norm(np.array(p1) - np.array(p2))
 
 
 def median(values):
-    if not values:
-        return None
-    return float(np.median(values))
+    return float(np.median(values)) if len(values) > 0 else None
 
 
-# вставь сюда свою KS_TABLE_2D без изменений
+def get_cm_per_pixel(sticker_px):
+    return 15.0 / sticker_px
+
 
 # =====================
-# 2D KLÜVER–STRÄUCH TABLE (chest × body length → weight)
+# GEOMETRY
 # =====================
-KS_TABLE_2D = {
-    84: {90: 54},
-    86: {90: 57, 92: 58},
-    88: {90: 59, 92: 60, 94: 61},
-    90: {90: 63, 92: 64, 94: 65, 96: 67},
-    92: {90: 67, 92: 68, 94: 69, 96: 70, 98: 72},
-    94: {90: 70, 92: 71, 94: 73, 96: 74, 98: 75, 100: 76},
-    96: {90: 73, 92: 75, 94: 76, 96: 77, 98: 78, 100: 79, 102: 81},
-    98: {90: 77, 92: 78, 94: 80, 96: 81, 98: 82, 100: 83, 102: 84, 104: 86},
-    100: {90: 80, 92: 82, 94: 84, 96: 85, 98: 86, 100: 87, 102: 88, 104: 90, 106: 91},
-    102: {90: 84, 92: 85, 94: 86, 96: 88, 98: 89, 100: 91, 102: 92, 104: 93, 106: 95, 108: 96},
-    104: {90: 88, 92: 90, 94: 91, 96: 92, 98: 94, 100: 95, 102: 97, 104: 98, 106: 99, 108: 101, 110: 102},
-    106: {90: 93, 92: 95, 94: 96, 96: 98, 98: 99, 100: 100, 102: 102, 104: 103, 106: 104, 108: 106, 110: 107, 112: 109},
-    108: {90: 99, 92: 100, 94: 102, 96: 103, 98: 105, 100: 106, 102: 107, 104: 109, 106: 110, 108: 112, 110: 113, 112: 114, 114: 116},
-    110: {90: 105, 92: 106, 94: 107, 96: 108, 98: 110, 100: 112, 102: 114, 104: 116, 106: 117, 108: 119, 110: 120, 112: 121, 114: 123},
-    112: {90: 110, 92: 111, 94: 112, 96: 114, 98: 115, 100: 117, 102: 118, 104: 119, 106: 121, 108: 122, 110: 124, 112: 126, 114: 128, 116: 130},
-    114: {90: 115, 92: 117, 94: 118, 96: 119, 98: 121, 100: 122, 102: 124, 104: 125, 106: 126, 108: 128, 110: 129, 112: 131, 114: 132, 116: 133, 118: 135, 120: 136},
-    116: {90: 121, 92: 122, 94: 124, 96: 125, 98: 126, 100: 128, 102: 129, 104: 131, 106: 132, 108: 133, 110: 135, 112: 136, 114: 138, 116: 139, 118: 140, 120: 142, 122: 143},
-    118: {90: 123, 92: 124, 94: 126, 96: 127, 98: 129, 100: 131, 102: 132, 104: 134, 106: 135, 108: 137, 110: 139, 112: 140, 114: 142, 116: 143, 118: 145, 120: 147, 122: 148, 124: 150},
-    120: {90: 129, 92: 130, 94: 132, 96: 133, 98: 135, 100: 137, 102: 138, 104: 140, 106: 141, 108: 143, 110: 145, 112: 146, 114: 148, 116: 149, 118: 151, 120: 153, 122: 154, 124: 156, 126: 157},
-    122: {92: 135, 94: 136, 96: 138, 98: 139, 100: 141, 102: 142, 104: 143, 106: 145, 108: 146, 110: 148, 112: 150, 114: 151, 116: 153, 118: 155, 120: 157, 122: 159, 124: 160, 126: 162},
-    125: {125: 164},
-    130: {125: 180, 130: 187},
-    135: {125: 196, 130: 203, 135: 213},
-    140: {125: 216, 130: 223, 135: 231, 140: 241},
-    145: {125: 232, 130: 240, 135: 250, 140: 259, 145: 268},
-    150: {125: 247, 130: 256, 135: 266, 140: 277, 145: 286, 150: 296},
-    155: {125: 264, 130: 274, 135: 285, 140: 295, 145: 306, 150: 317, 155: 328},
-    160: {125: 282, 130: 290, 135: 301, 140: 313, 145: 324, 150: 334, 155: 347, 160: 356},
-    165: {130: 310, 135: 323, 140: 334, 145: 347, 150: 358, 155: 370, 160: 381, 165: 394},
-    170: {135: 342, 140: 355, 145: 368, 150: 380, 155: 393, 160: 404, 165: 417, 170: 431},
-    175: {140: 374, 145: 390, 150: 403, 155: 417, 160: 429, 165: 443, 170: 457, 175: 470},
-    180: {145: 414, 150: 428, 155: 443, 160: 452, 165: 471, 170: 486, 175: 500, 180: 515},
-    185: {150: 449, 155: 464, 160: 478, 165: 494, 170: 508, 175: 524, 180: 540, 185: 552},
-    190: {155: 492, 160: 506, 165: 522, 170: 538, 175: 555, 180: 572, 185: 585, 190: 602},
-    195: {160: 531, 165: 549, 170: 566, 175: 582, 180: 600, 185: 615, 190: 633, 195: 648},
-    200: {165: 580, 170: 597, 175: 614, 180: 634, 185: 649, 190: 667, 195: 684},
-    205: {170: 626, 175: 644, 180: 662, 185: 680, 190: 699, 195: 717},
-    210: {175: 678, 180: 699, 185: 716, 190: 736, 195: 754},
-    215: {180: 734, 185: 751, 190: 773, 195: 792},
-    220: {185: 782, 190: 804, 195: 825},
-    225: {190: 843, 195: 863},
-}
+def polygon_area(points):
+    x = points[:, 0]
+    y = points[:, 1]
+    return 0.5 * abs(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1)))
 
-def kluver_strauch_weight_2d(chest, length):
-    # (вставь свою функцию без изменений)
-    if chest is None or length is None:
+
+# =====================
+# FEATURE ENGINEERING (MAIN)
+# =====================
+def extract_features(kpts, cow_seg, sticker_px):
+    """
+    kpts: (9,2)
+    cow_seg: Nx2
+    sticker_px: float
+    """
+
+    try:
+        wither = kpts[0]
+        pinbone = kpts[1]
+        shoulder = kpts[2]
+
+        front_top = kpts[3]
+        front_bottom = kpts[4]
+
+        rear_top = kpts[5]
+        rear_bottom = kpts[6]
+
+        h_top = kpts[7]
+        h_bottom = kpts[8]
+
+        # =====================
+        # DISTANCES (px)
+        # =====================
+        body_len = pixel_distance(wither, pinbone)
+        body_diag = pixel_distance(shoulder, pinbone)
+
+        front_girth = pixel_distance(front_top, front_bottom)
+        rear_girth = pixel_distance(rear_top, rear_bottom)
+        height = pixel_distance(h_top, h_bottom)
+
+        # =====================
+        # SCALE
+        # =====================
+        if sticker_px is None or sticker_px < 1:
+            return None
+
+        cm_per_pixel = get_cm_per_pixel(sticker_px)
+
+        body_len_cm = body_len * cm_per_pixel
+        body_diag_cm = body_diag * cm_per_pixel * 2
+
+        front_girth_cm = front_girth * cm_per_pixel
+        rear_girth_cm = rear_girth * cm_per_pixel
+        height_cm = height * cm_per_pixel
+
+        # =====================
+        # AREA
+        # =====================
+        cow_area_px = polygon_area(cow_seg)
+        cow_area_cm2 = cow_area_px * (cm_per_pixel ** 2)
+
+        # =====================
+        # VOLUMES
+        # =====================
+        volume1 = body_len_cm * height_cm * front_girth_cm
+        volume2 = body_len_cm * front_girth_cm * rear_girth_cm
+
+        volume1_log = np.log(volume1 + 1e-6)
+        volume2_log = np.log(volume2 + 1e-6)
+
+        # =====================
+        # RATIOS
+        # =====================
+        length_height_ratio = body_len_cm / (height_cm + 1e-6)
+        girth_ratio = front_girth_cm / (rear_girth_cm + 1e-6)
+
+        # =====================
+        # BBOX FEATURES
+        # =====================
+        x_min, y_min = np.min(cow_seg, axis=0)
+        x_max, y_max = np.max(cow_seg, axis=0)
+
+        bbox_w = (x_max - x_min) * cm_per_pixel
+        bbox_h = (y_max - y_min) * cm_per_pixel
+
+        aspect_ratio = bbox_w / (bbox_h + 1e-6)
+
+        bbox_area = bbox_w * bbox_h
+        compactness = cow_area_cm2 / (bbox_area + 1e-6)
+
+        # =====================
+        # ANGLE
+        # =====================
+        angle = np.arctan2(
+            pinbone[1] - wither[1],
+            pinbone[0] - wither[0]
+        )
+
+        area_log = np.log(cow_area_cm2 + 1e-6)
+
+        # =====================
+        # FINAL VECTOR (ORDER IMPORTANT!)
+        # =====================
+        return np.array([
+            body_len_cm,
+            height_cm,
+            front_girth_cm,
+            rear_girth_cm,
+            body_diag_cm,
+            area_log,
+            length_height_ratio,
+            girth_ratio,
+            volume1_log,
+            volume2_log,
+            bbox_w,
+            bbox_h,
+            aspect_ratio,
+            compactness,
+            angle
+        ], dtype=np.float32)
+
+    except:
         return None
-
-    chest_keys = sorted(KS_TABLE_2D.keys())
-
-    chest = max(min(chest, chest_keys[-1]), chest_keys[0])
-
-    for i in range(len(chest_keys) - 1):
-        c1, c2 = chest_keys[i], chest_keys[i + 1]
-
-        if c1 <= chest <= c2:
-
-            table1 = KS_TABLE_2D[c1]
-            table2 = KS_TABLE_2D[c2]
-
-            len_keys = sorted(set(table1.keys()) & set(table2.keys()))
-
-            if len(len_keys) == 0:
-                return None
-
-            length = max(min(length, len_keys[-1]), len_keys[0])
-
-            for j in range(len(len_keys) - 1):
-                l1, l2 = len_keys[j], len_keys[j + 1]
-
-                if l1 <= length <= l2:
-                    q11 = table1[l1]
-                    q12 = table1[l2]
-                    q21 = table2[l1]
-                    q22 = table2[l2]
-
-                    t = (chest - c1) / (c2 - c1)
-                    u = (length - l1) / (l2 - l1)
-
-                    return (
-                            (1 - t) * (1 - u) * q11 +
-                            (1 - t) * u * q12 +
-                            t * (1 - u) * q21 +
-                            t * u * q22
-                    )
-
-    return None

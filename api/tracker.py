@@ -2,10 +2,11 @@ from ultralytics import YOLO
 
 
 class CowTracker:
-    def __init__(self, model_path, tracker_config):
+    def __init__(self, model_path, tracker_config, device = "cpu"):
         self.model = YOLO(model_path)
         self.tracker_config = tracker_config
         self.class_names = self.model.names
+        self.device = device
 
     def track(self, frame):
         return self.model.track(
@@ -13,7 +14,8 @@ class CowTracker:
             persist=True,
             tracker=self.tracker_config,
             conf=0.5,
-            verbose=False
+            verbose=False,
+            device = self.device
         )
 
     def get_cows(self, results):

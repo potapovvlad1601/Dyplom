@@ -2,8 +2,10 @@ from ultralytics import YOLO
 
 
 class CowClassifier:
-    def __init__(self, model_path):
+    def __init__(self, model_path, device = "cpu"):
         self.model = YOLO(model_path)
+        self.device = device
+
 
     def classify(self, frame, bbox):
         x1, y1, x2, y2 = bbox
@@ -12,7 +14,7 @@ class CowClassifier:
         if crop.size == 0:
             return None, 0.0
 
-        results = self.model.predict(crop, verbose=False)
+        results = self.model.predict(crop, device=self.device, verbose=False)
 
         for r in results:
             if r.probs is None:
