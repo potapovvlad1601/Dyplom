@@ -1,6 +1,5 @@
 import cv2
 import os
-import joblib
 import numpy as np
 import torch
 
@@ -9,7 +8,6 @@ from .pose import PoseEstimator
 from .classifier import CowClassifier
 from .sticker_utils import *
 from .utils import *
-
 
 DISTANCE_PAIRS = [
     ("3-4", 3, 4, 2.0, (0, 255, 255)),
@@ -58,7 +56,14 @@ def _draw_cow_overlay(frame, cow, state):
     keypoints = state.get("keypoints") or {}
     distances = state.get("latest_distances") or {}
 
+    # =====================
+    # BBOX
+    # =====================
     cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 200, 0), 2)
+
+    # =====================
+    # ID + BREED (RED)
+    # =====================
     cv2.putText(
         frame,
         f"ID {track_id} | {breed}",
@@ -70,37 +75,83 @@ def _draw_cow_overlay(frame, cow, state):
         cv2.LINE_AA,
     )
 
+    # =====================
+    # KEYPOINTS (RED DOTS)
+    # =====================
     for point in keypoints.values():
         if point is None:
             continue
         px, py = map(int, point)
         cv2.circle(frame, (px, py), 4, (0, 0, 255), -1)
 
-    distance_lines = []
-    for name, _, _, _, _ in DISTANCE_PAIRS:
+    # =====================
+    # DISTANCES (YELLOW TEXT, NO LINES)
+    # =====================
+    for name, a, b, _, _ in DISTANCE_PAIRS:
+        if a not in keypoints or b not in keypoints:
+            continue
+
+        pt1 = keypoints[a]
+        pt2 = keypoints[b]
+
+        if pt1 is None or pt2 is None:
+            continue
+
         distance = distances.get(name)
         if distance is None:
             continue
-        distance_lines.append(f"{name}: {distance:.1f} cm")
 
-    if distance_lines:
-        preferred_y = y2 + 24 + len(distance_lines) * 22
-        if preferred_y > frame.shape[0]:
-            preferred_y = max(24 + len(distance_lines) * 22, y1 - 10)
-        _draw_plain_text_lines(
+        x1p, y1p = map(int, pt1)
+        x2p, y2p = map(int, pt2)
+
+        # midpoint
+        mid_x = int((x1p + x2p) / 2)
+        mid_y = int((y1p + y2p) / 2)
+
+        cv2.putText(
             frame,
-            distance_lines,
-            x1,
-            preferred_y,
-            text_color=(0, 255, 255),
+            f"{distance:.1f} cm",
+            (mid_x + 5, mid_y - 5),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.6,
+            (0, 255, 255),  # YELLOW
+            2,
+            cv2.LINE_AA,
         )
+
+
+def _save_cow_snapshot(frame, bbox, track_id, frame_idx, output_dir, features):
+    cows_dir = os.path.join(output_dir, "cows")
+    os.makedirs(cows_dir, exist_ok=True)
+
+    crop = crop_bbox(frame, bbox)
+    if crop is None:
+        return None
+
+    base_name = f"cow_{track_id}_frame_{frame_idx}"
+    image_rel_path = os.path.join("cows", f"{base_name}.jpg")
+    txt_rel_path = os.path.join("cows", f"{base_name}.txt")
+
+    image_path = os.path.join(output_dir, image_rel_path)
+    txt_path = os.path.join(output_dir, txt_rel_path)
+
+    if not cv2.imwrite(image_path, crop):
+        return None
+
+    save_features_txt(txt_path, features)
+
+    return {
+        "image_path": image_rel_path.replace("\\", "/"),
+        "features_path": txt_rel_path.replace("\\", "/"),
+        "frame_idx": frame_idx,
+    }
 
 
 def process_video(video_path, output_dir, progress_callback=None):
 
     os.makedirs(output_dir, exist_ok=True)
     annotated_video_path = os.path.join(output_dir, "annotated.mp4")
-
+    print("🔥 RUNNING UPDATED PIPELINE VERSION")
     # =====================
     # MODELS
     # =====================
@@ -114,9 +165,6 @@ def process_video(video_path, output_dir, progress_callback=None):
         tracker = CowTracker("models/Yolo26l-seg.pt", "models/botsort_reid20.yaml", device)
         pose_model = PoseEstimator("models/yolo26l-poseB2.pt", device)
         classifier = CowClassifier("models/yolo11l-cls.pt", device)
-
-    # XGB MODEL
-    weight_model = joblib.load("models/xgb_model_all2.2.pkl")
 
     cap = cv2.VideoCapture(video_path)
     if not cap.isOpened():
@@ -141,7 +189,6 @@ def process_video(video_path, output_dir, progress_callback=None):
 
     cow_data = {}
     measurements = {}
-    weight_predictions = {}
 
     frame_idx = 0
 
@@ -189,7 +236,11 @@ def process_video(video_path, output_dir, progress_callback=None):
                     "breed": None,
                     "breed_conf": 0,
                     "seg": None,
-                    "latest_distances": {}
+                    "latest_distances": {},
+                    "snapshot_saved": False,
+                    "snapshot_frame": None,
+                    "snapshot_image": None,
+                    "snapshot_features": None,
                 }
 
             if track_id not in measurements:
@@ -198,9 +249,6 @@ def process_video(video_path, output_dir, progress_callback=None):
                     "2-1": [],
                     "0-6": []
                 }
-
-            if track_id not in weight_predictions:
-                weight_predictions[track_id] = []
 
             # =====================
             # SEGMENTATION
@@ -248,12 +296,18 @@ def process_video(video_path, output_dir, progress_callback=None):
                             cow_data[track_id]["latest_distances"][name] = dist_cm
 
             # =====================
-            # XGB WEIGHT PREDICTION
+            # ONE-TIME CENTER SNAPSHOT + FEATURE SAVE
             # =====================
             seg = cow_data[track_id].get("seg")
+            if seg is None:
+                seg = bbox_to_polygon(bbox)
 
-            if sticker_px and seg is not None and len(keypoints) >= 9:
-
+            if (
+                not cow_data[track_id]["snapshot_saved"]
+                and sticker_px
+                and all(i in keypoints for i in range(9))
+                and is_bbox_centered(bbox, frame.shape)
+            ):
                 kpts_array = np.array(
                     [keypoints[i] for i in range(9)],
                     dtype=np.float32
@@ -266,11 +320,20 @@ def process_video(video_path, output_dir, progress_callback=None):
                 )
 
                 if features is not None:
-                    pred = weight_model.predict(features.reshape(1, -1))[0]
-                    weight = float(np.exp(pred))  # log-space model
+                    snapshot = _save_cow_snapshot(
+                        frame,
+                        bbox,
+                        track_id,
+                        frame_idx,
+                        output_dir,
+                        features
+                    )
 
-                    if 50 < weight < 1500:
-                        weight_predictions[track_id].append(weight)
+                    if snapshot is not None:
+                        cow_data[track_id]["snapshot_saved"] = True
+                        cow_data[track_id]["snapshot_frame"] = snapshot["frame_idx"]
+                        cow_data[track_id]["snapshot_image"] = snapshot["image_path"]
+                        cow_data[track_id]["snapshot_features"] = snapshot["features_path"]
 
             _draw_cow_overlay(annotated_frame, cow, cow_data[track_id])
 
@@ -295,28 +358,12 @@ def process_video(video_path, output_dir, progress_callback=None):
             if m:
                 medians[k] = m
 
-        # =====================
-        # WEIGHT AGGREGATION
-        # =====================
-        wp = weight_predictions.get(track_id, [])
-
-        if wp:
-            wp = np.array(wp)
-            med = np.median(wp)
-
-            filtered = wp[np.abs(wp - med) < 0.2 * med]
-
-            if len(filtered) > 0:
-                final_weight = float(np.median(filtered))
-            else:
-                final_weight = float(med)
-        else:
-            final_weight = None
-
         results_data[track_id] = {
             "breed": breed,
             "measurements": medians,
-            "weight": final_weight
+            "snapshot_frame": cow_data[track_id]["snapshot_frame"],
+            "snapshot_image": cow_data[track_id]["snapshot_image"],
+            "snapshot_features": cow_data[track_id]["snapshot_features"],
         }
 
     return results_data, annotated_video_path

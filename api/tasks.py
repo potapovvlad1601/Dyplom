@@ -6,6 +6,20 @@ from .cow_pipeline import process_video
 TASKS = {}
 
 
+def _build_result_urls(task_id, result):
+    for cow_result in result.values():
+        image_path = cow_result.get("snapshot_image")
+        features_path = cow_result.get("snapshot_features")
+
+        if image_path:
+            cow_result["snapshot_image_url"] = f"/media/results/{task_id}/{image_path}"
+
+        if features_path:
+            cow_result["snapshot_features_url"] = f"/media/results/{task_id}/{features_path}"
+
+    return result
+
+
 def run_task(task_id, video_path):
     try:
         def progress_callback(progress, stage):
@@ -17,6 +31,7 @@ def run_task(task_id, video_path):
             output_dir,
             progress_callback=progress_callback
         )
+        result = _build_result_urls(task_id, result)
 
         TASKS[task_id] = {
             "status": "done",

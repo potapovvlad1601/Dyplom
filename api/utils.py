@@ -1,6 +1,25 @@
 import numpy as np
 
 
+FEATURE_NAMES = [
+    "body_len_cm",
+    "height_cm",
+    "front_girth_cm",
+    "rear_girth_cm",
+    "body_diag_cm",
+    "area_log",
+    "length_height_ratio",
+    "girth_ratio",
+    "volume1_log",
+    "volume2_log",
+    "bbox_w",
+    "bbox_h",
+    "aspect_ratio",
+    "compactness",
+    "angle",
+]
+
+
 # =====================
 # BASIC UTILS
 # =====================
@@ -23,6 +42,55 @@ def polygon_area(points):
     x = points[:, 0]
     y = points[:, 1]
     return 0.5 * abs(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1)))
+
+
+def bbox_to_polygon(bbox):
+    x1, y1, x2, y2 = bbox
+    return np.array([
+        [x1, y1],
+        [x2, y1],
+        [x2, y2],
+        [x1, y2],
+    ], dtype=np.float32)
+
+
+def is_bbox_centered(bbox, frame_shape, center_region_ratio=0.5):
+    frame_h, frame_w = frame_shape[:2]
+    center_w = frame_w * center_region_ratio
+    center_h = frame_h * center_region_ratio
+
+    left = (frame_w - center_w) / 2
+    right = (frame_w + center_w) / 2
+    top = (frame_h - center_h) / 2
+    bottom = (frame_h + center_h) / 2
+
+    x1, y1, x2, y2 = bbox
+    center_x = (x1 + x2) / 2
+    center_y = (y1 + y2) / 2
+
+    return left <= center_x <= right and top <= center_y <= bottom
+
+
+def crop_bbox(frame, bbox):
+    frame_h, frame_w = frame.shape[:2]
+    x1, y1, x2, y2 = bbox
+
+    x1 = max(0, min(frame_w, x1))
+    x2 = max(0, min(frame_w, x2))
+    y1 = max(0, min(frame_h, y1))
+    y2 = max(0, min(frame_h, y2))
+
+    if x2 <= x1 or y2 <= y1:
+        return None
+
+    crop = frame[y1:y2, x1:x2]
+    return crop if crop.size > 0 else None
+
+
+def save_features_txt(txt_path, features):
+    with open(txt_path, "w", encoding="utf-8") as file:
+        for name, value in zip(FEATURE_NAMES, features):
+            file.write(f"{name}={float(value):.6f}\n")
 
 
 # =====================
