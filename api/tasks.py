@@ -10,12 +10,16 @@ def _build_result_urls(task_id, result):
     for cow_result in result.values():
         image_path = cow_result.get("snapshot_image")
         features_path = cow_result.get("snapshot_features")
+        prompt_path = cow_result.get("snapshot_prompt")
 
         if image_path:
             cow_result["snapshot_image_url"] = f"/media/results/{task_id}/{image_path}"
 
         if features_path:
             cow_result["snapshot_features_url"] = f"/media/results/{task_id}/{features_path}"
+
+        if prompt_path:
+            cow_result["snapshot_prompt_url"] = f"/media/results/{task_id}/{prompt_path}"
 
     return result
 

@@ -3,6 +3,7 @@ import os
 import numpy as np
 import torch
 
+from .LLM_api import build_weight_prompt_from_file, estimate_weight_from_files, save_weight_prompt
 from .tracker import CowTracker
 from .pose import PoseEstimator
 from .classifier import CowClassifier
@@ -145,6 +146,17 @@ def _save_cow_snapshot(frame, bbox, track_id, frame_idx, output_dir, features):
         "features_path": txt_rel_path.replace("\\", "/"),
         "frame_idx": frame_idx,
     }
+
+
+def _resolve_output_path(output_dir, relative_path):
+    if not relative_path:
+        return None
+    return os.path.join(output_dir, relative_path.replace("/", os.sep))
+
+
+def _replace_extension(relative_path, new_extension):
+    base_path, _ = os.path.splitext(relative_path)
+    return f"{base_path}{new_extension}"
 
 
 def process_video(video_path, output_dir, progress_callback=None):
@@ -364,6 +376,37 @@ def process_video(video_path, output_dir, progress_callback=None):
             "snapshot_frame": cow_data[track_id]["snapshot_frame"],
             "snapshot_image": cow_data[track_id]["snapshot_image"],
             "snapshot_features": cow_data[track_id]["snapshot_features"],
+            "snapshot_prompt": None,
+            "weight": None,
+            "weight_confidence": None,
+            "weight_reasoning": None,
+            "weight_model": None,
+            "weight_error": None,
         }
+
+        snapshot_image = _resolve_output_path(output_dir, cow_data[track_id]["snapshot_image"])
+        snapshot_features = _resolve_output_path(output_dir, cow_data[track_id]["snapshot_features"])
+
+        if snapshot_image and snapshot_features:
+            try:
+                prompt_relative_path = _replace_extension(
+                    cow_data[track_id]["snapshot_features"],
+                    "_prompt.txt"
+                )
+                prompt_output_path = _resolve_output_path(output_dir, prompt_relative_path)
+                prompt_text = build_weight_prompt_from_file(snapshot_features)
+                save_weight_prompt(prompt_output_path, prompt_text)
+                results_data[track_id]["snapshot_prompt"] = prompt_relative_path
+
+                llm_result = estimate_weight_from_files(
+                    image_path=snapshot_image,
+                    features_path=snapshot_features,
+                )
+                results_data[track_id]["weight"] = llm_result["weight"]
+                results_data[track_id]["weight_confidence"] = llm_result["confidence"]
+                results_data[track_id]["weight_reasoning"] = llm_result["reasoning"]
+                results_data[track_id]["weight_model"] = llm_result["model"]
+            except Exception as error:
+                results_data[track_id]["weight_error"] = str(error)
 
     return results_data, annotated_video_path
