@@ -404,7 +404,6 @@ def process_video(video_path, output_dir, progress_callback=None):
                 )
                 results_data[track_id]["weight"] = llm_result["weight"]
                 results_data[track_id]["weight_confidence"] = llm_result["confidence"]
-                results_data[track_id]["weight_reasoning"] = llm_result["reasoning"]
                 results_data[track_id]["weight_model"] = llm_result["model"]
             except Exception as error:
                 results_data[track_id]["weight_error"] = str(error)

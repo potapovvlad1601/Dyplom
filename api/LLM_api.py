@@ -3,11 +3,10 @@ import json
 import mimetypes
 import os
 import re
-import urllib.error
-import urllib.request
+from functools import lru_cache
 
+import anthropic
 
-ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages"
 DEFAULT_MODEL = os.getenv("ANTHROPIC_MODEL", "claude-sonnet-4-20250514")
 DEFAULT_MAX_TOKENS = int(os.getenv("ANTHROPIC_MAX_TOKENS", "300"))
 
@@ -57,7 +56,6 @@ Return valid JSON only with this schema:
 {{
   "weight_kg": 0,
   "confidence": "low|medium|high",
-  "reasoning": "short explanation referencing both the image and the numerical features"
 }}
 """
 
@@ -117,12 +115,12 @@ def _load_image_base64(image_path):
 
 
 def _extract_text_content(response_payload):
-    content_blocks = response_payload.get("content", [])
+    content_blocks = response_payload.content
     text_parts = []
 
     for block in content_blocks:
-        if block.get("type") == "text" and block.get("text"):
-            text_parts.append(block["text"])
+        if getattr(block, "type", None) == "text" and getattr(block, "text", None):
+            text_parts.append(block.text)
 
     return "\n".join(text_parts).strip()
 
@@ -145,7 +143,6 @@ def parse_weight_response(text):
 
     weight_kg = payload.get("weight_kg")
     confidence = payload.get("confidence")
-    reasoning = payload.get("reasoning")
 
     if weight_kg is None:
         raise ValueError(f"Claude response is missing weight_kg: {text}")
@@ -161,67 +158,46 @@ def parse_weight_response(text):
     if confidence not in {"low", "medium", "high"}:
         confidence = None
 
-    if reasoning is not None:
-        reasoning = str(reasoning).strip()
-
     return {
         "weight": weight_kg,
         "confidence": confidence,
-        "reasoning": reasoning,
     }
+
+
+@lru_cache(maxsize=None)
+def _get_anthropic_client(api_key):
+    return anthropic.Anthropic(api_key=api_key)
 
 
 def request_claude_weight(image_path, prompt, api_key, model=DEFAULT_MODEL, max_tokens=DEFAULT_MAX_TOKENS):
-    media_type = _guess_media_type(image_path)
-    image_base64 = _load_image_base64(image_path)
-
-    payload = {
-        "model": model,
-        "max_tokens": max_tokens,
-        "messages": [
-            {
-                "role": "user",
-                "content": [
-                    {
-                        "type": "image",
-                        "source": {
-                            "type": "base64",
-                            "media_type": media_type,
-                            "data": image_base64,
-                        },
-                    },
-                    {
-                        "type": "text",
-                        "text": prompt,
-                    },
-                ],
-            }
-        ],
-    }
-
-    request = urllib.request.Request(
-        ANTHROPIC_API_URL,
-        data=json.dumps(payload).encode("utf-8"),
-        headers={
-            "content-type": "application/json",
-            "x-api-key": api_key,
-            "anthropic-version": "2023-06-01",
-        },
-        method="POST",
-    )
+    client = _get_anthropic_client(api_key)
 
     try:
-        with urllib.request.urlopen(request, timeout=120) as response:
-            response_data = json.loads(response.read().decode("utf-8"))
-    except urllib.error.HTTPError as error:
-        error_body = error.read().decode("utf-8", errors="replace")
-        raise RuntimeError(
-            f"Claude API request failed with status {error.code}: {error_body}"
-        ) from error
-    except urllib.error.URLError as error:
+        return client.messages.create(
+            model=model,
+            max_tokens=max_tokens,
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "image",
+                            "source": {
+                                "type": "base64",
+                                "media_type": _guess_media_type(image_path),
+                                "data": _load_image_base64(image_path),
+                            },
+                        },
+                        {
+                            "type": "text",
+                            "text": prompt,
+                        },
+                    ],
+                }
+            ],
+        )
+    except anthropic.APIError as error:
         raise RuntimeError(f"Claude API request failed: {error}") from error
-
-    return response_data
 
 
 def estimate_weight_from_files(image_path, features_path, api_key=None, model=DEFAULT_MODEL):
@@ -242,9 +218,8 @@ def estimate_weight_from_files(image_path, features_path, api_key=None, model=DE
     return {
         "weight": parsed["weight"],
         "confidence": parsed["confidence"],
-        "reasoning": parsed["reasoning"],
-        "model": model,
+        "model": str(response_payload.model),
         "prompt": prompt,
         "raw_response": response_text,
-        "usage": response_payload.get("usage"),
+        "usage": response_payload.usage.model_dump(),
     }

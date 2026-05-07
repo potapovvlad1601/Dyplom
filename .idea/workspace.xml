@@ -4,11 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="333ba607-ccbe-43a6-8e86-a85731fcab5e" name="Changes" comment="Удалили XGBoost и добавили сохранение признаков в txt файлах. Скриншоты коров по центру">
-      <change afterPath="$PROJECT_DIR$/api/LLM_api.py" afterDir="false" />
+    <list default="true" id="333ba607-ccbe-43a6-8e86-a85731fcab5e" name="Changes" comment="Started to add Claude LLM for weight prediction">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/LLM_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/LLM_api.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/api/cow_pipeline.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/cow_pipeline.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/tasks.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/tasks.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,7 +18,7 @@
     <option name="myCustomStartScript" value="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="36" />
+    <option name="cachedIndexableFilesCount" value="40" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="FileTemplateManagerImpl">
@@ -90,10 +89,10 @@
 }</component>
   <component name="RecapSpentCounter">
     <option name="endsOfQuotaMs" value="1780246875658" />
-    <option name="spentUsd" value="0.062120546" />
+    <option name="spentUsd" value="0.0710463" />
   </component>
   <component name="RecapUselessUpdatesCounter">
-    <option name="suspendCountdown" value="2" />
+    <option name="suspendCountdown" value="0" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -196,7 +195,12 @@
       <workItem from="1778008567948" duration="1249000" />
       <workItem from="1778069692141" duration="3654000" />
       <workItem from="1778079815917" duration="98000" />
-      <workItem from="1778097292585" duration="902000" />
+      <workItem from="1778097292585" duration="2582000" />
+      <workItem from="1778105638618" duration="231000" />
+      <workItem from="1778147474017" duration="782000" />
+      <workItem from="1778149544054" duration="102000" />
+      <workItem from="1778156726597" duration="364000" />
+      <workItem from="1778171155935" duration="640000" />
     </task>
     <task id="LOCAL-00001" summary="Алгоритм из оригинала">
       <option name="closed" value="true" />
@@ -270,7 +274,15 @@
       <option name="project" value="LOCAL" />
       <updated>1778073803105</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Started to add Claude LLM for weight prediction">
+      <option name="closed" value="true" />
+      <created>1778098565503</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1778098565503</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -308,7 +320,8 @@
     <MESSAGE value="Change weight predictions module" />
     <MESSAGE value="Добавляем визуализацию" />
     <MESSAGE value="Удалили XGBoost и добавили сохранение признаков в txt файлах. Скриншоты коров по центру" />
-    <option name="LAST_COMMIT_MESSAGE" value="Удалили XGBoost и добавили сохранение признаков в txt файлах. Скриншоты коров по центру" />
+    <MESSAGE value="Started to add Claude LLM for weight prediction" />
+    <option name="LAST_COMMIT_MESSAGE" value="Started to add Claude LLM for weight prediction" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
