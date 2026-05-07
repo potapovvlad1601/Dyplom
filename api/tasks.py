@@ -1,6 +1,7 @@
 import threading
 import uuid
 import os
+import json
 from .cow_pipeline import process_video
 
 TASKS = {}
@@ -24,6 +25,26 @@ def _build_result_urls(task_id, result):
     return result
 
 
+def _save_weight_results(task_id, result):
+    task_results_dir = os.path.join("results", task_id)
+    os.makedirs(task_results_dir, exist_ok=True)
+
+    weights_payload = {}
+    for cow_id, cow_result in result.items():
+        weights_payload[str(cow_id)] = {
+            "weight": cow_result.get("weight"),
+            "weight_confidence": cow_result.get("weight_confidence"),
+            "weight_model": cow_result.get("weight_model"),
+            "weight_error": cow_result.get("weight_error"),
+        }
+
+    weights_path = os.path.join(task_results_dir, "weights.json")
+    with open(weights_path, "w", encoding="utf-8") as file:
+        json.dump(weights_payload, file, ensure_ascii=False, indent=2)
+
+    return weights_path
+
+
 def run_task(task_id, video_path):
     try:
         def progress_callback(progress, stage):
@@ -35,6 +56,7 @@ def run_task(task_id, video_path):
             output_dir,
             progress_callback=progress_callback
         )
+        weights_path = _save_weight_results(task_id, result)
         result = _build_result_urls(task_id, result)
 
         TASKS[task_id] = {
@@ -42,7 +64,8 @@ def run_task(task_id, video_path):
             "progress": 100,
             "result": result,
             "video_path": annotated_video_path,
-            "video_url": f"/media/results/{task_id}/annotated.mp4"
+            "video_url": f"/media/results/{task_id}/annotated.mp4",
+            "weights_path": weights_path,
         }
 
     except Exception as e:

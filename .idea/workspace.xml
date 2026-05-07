@@ -4,10 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="333ba607-ccbe-43a6-8e86-a85731fcab5e" name="Changes" comment="Started to add Claude LLM for weight prediction">
+    <list default="true" id="333ba607-ccbe-43a6-8e86-a85731fcab5e" name="Changes" comment="Replacing urllib usage with the Anthropetic SDK">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/LLM_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/LLM_api.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/cow_pipeline.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/cow_pipeline.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/tasks.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/tasks.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -200,7 +199,8 @@
       <workItem from="1778147474017" duration="782000" />
       <workItem from="1778149544054" duration="102000" />
       <workItem from="1778156726597" duration="364000" />
-      <workItem from="1778171155935" duration="640000" />
+      <workItem from="1778171155935" duration="989000" />
+      <workItem from="1778177606280" duration="958000" />
     </task>
     <task id="LOCAL-00001" summary="Алгоритм из оригинала">
       <option name="closed" value="true" />
@@ -282,7 +282,15 @@
       <option name="project" value="LOCAL" />
       <updated>1778098565503</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Replacing urllib usage with the Anthropetic SDK">
+      <option name="closed" value="true" />
+      <created>1778172099009</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1778172099009</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -321,7 +329,8 @@
     <MESSAGE value="Добавляем визуализацию" />
     <MESSAGE value="Удалили XGBoost и добавили сохранение признаков в txt файлах. Скриншоты коров по центру" />
     <MESSAGE value="Started to add Claude LLM for weight prediction" />
-    <option name="LAST_COMMIT_MESSAGE" value="Started to add Claude LLM for weight prediction" />
+    <MESSAGE value="Replacing urllib usage with the Anthropetic SDK" />
+    <option name="LAST_COMMIT_MESSAGE" value="Replacing urllib usage with the Anthropetic SDK" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

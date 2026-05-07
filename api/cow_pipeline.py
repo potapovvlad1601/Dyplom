@@ -1,6 +1,7 @@
 import cv2
 import os
 import numpy as np
+import threading
 import torch
 
 from .LLM_api import build_weight_prompt_from_file, estimate_weight_from_files, save_weight_prompt
@@ -15,6 +16,34 @@ DISTANCE_PAIRS = [
     ("2-1", 2, 1, 1.0, (255, 255, 0)),
     ("0-6", 0, 6, 1.0, (255, 0, 255)),
 ]
+
+_MODELS = None
+_MODELS_LOCK = threading.Lock()
+
+
+def _build_models():
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    return {
+        "device": device,
+        "tracker": CowTracker("models/Yolo26l-seg.pt", "models/botsort_reid20.yaml", device),
+        "pose_model": PoseEstimator("models/yolo26l-poseB2.pt", device),
+        "classifier": CowClassifier("models/yolo11l-cls.pt", device),
+    }
+
+
+def get_models():
+    global _MODELS
+
+    if _MODELS is None:
+        with _MODELS_LOCK:
+            if _MODELS is None:
+                _MODELS = _build_models()
+
+    return _MODELS
+
+
+def preload_models():
+    return get_models()
 
 
 def _draw_plain_text_lines(frame, lines, x, y, text_color=(0, 255, 255)):
@@ -167,16 +196,10 @@ def process_video(video_path, output_dir, progress_callback=None):
     # =====================
     # MODELS
     # =====================
-    if torch.cuda.is_available():
-        device = "cuda"
-        tracker = CowTracker("models/Yolo26l-seg.pt", "models/botsort_reid20.yaml", device)
-        pose_model = PoseEstimator("models/yolo26l-poseB2.pt", device)
-        classifier = CowClassifier("models/yolo11l-cls.pt", device)
-    else:
-        device = "cpu"
-        tracker = CowTracker("models/Yolo26l-seg.pt", "models/botsort_reid20.yaml", device)
-        pose_model = PoseEstimator("models/yolo26l-poseB2.pt", device)
-        classifier = CowClassifier("models/yolo11l-cls.pt", device)
+    models = get_models()
+    tracker = models["tracker"]
+    pose_model = models["pose_model"]
+    classifier = models["classifier"]
 
     cap = cv2.VideoCapture(video_path)
     if not cap.isOpened():
