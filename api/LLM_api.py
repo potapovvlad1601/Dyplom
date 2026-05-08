@@ -6,6 +6,9 @@ import re
 from functools import lru_cache
 
 import anthropic
+from MainServerv2.env import load_env_file
+
+load_env_file()
 
 DEFAULT_MODEL = os.getenv("ANTHROPIC_MODEL", "claude-sonnet-4-20250514")
 DEFAULT_MAX_TOKENS = int(os.getenv("ANTHROPIC_MAX_TOKENS", "300"))

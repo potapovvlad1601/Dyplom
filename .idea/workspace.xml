@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="333ba607-ccbe-43a6-8e86-a85731fcab5e" name="Changes" comment="Replacing urllib usage with the Anthropetic SDK">
+    <list default="true" id="333ba607-ccbe-43a6-8e86-a85731fcab5e" name="Changes" comment="Загрузка моделей только при запуске сервера">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/tasks.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/tasks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/LLM_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/LLM_api.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -17,7 +17,7 @@
     <option name="myCustomStartScript" value="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="40" />
+    <option name="cachedIndexableFilesCount" value="41" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="FileTemplateManagerImpl">
@@ -201,6 +201,8 @@
       <workItem from="1778156726597" duration="364000" />
       <workItem from="1778171155935" duration="989000" />
       <workItem from="1778177606280" duration="958000" />
+      <workItem from="1778191297935" duration="553000" />
+      <workItem from="1778242295379" duration="1507000" />
     </task>
     <task id="LOCAL-00001" summary="Алгоритм из оригинала">
       <option name="closed" value="true" />
@@ -290,7 +292,15 @@
       <option name="project" value="LOCAL" />
       <updated>1778172099009</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Загрузка моделей только при запуске сервера">
+      <option name="closed" value="true" />
+      <created>1778191598717</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1778191598717</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -330,7 +340,8 @@
     <MESSAGE value="Удалили XGBoost и добавили сохранение признаков в txt файлах. Скриншоты коров по центру" />
     <MESSAGE value="Started to add Claude LLM for weight prediction" />
     <MESSAGE value="Replacing urllib usage with the Anthropetic SDK" />
-    <option name="LAST_COMMIT_MESSAGE" value="Replacing urllib usage with the Anthropetic SDK" />
+    <MESSAGE value="Загрузка моделей только при запуске сервера" />
+    <option name="LAST_COMMIT_MESSAGE" value="Загрузка моделей только при запуске сервера" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
