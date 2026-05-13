@@ -4,9 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="333ba607-ccbe-43a6-8e86-a85731fcab5e" name="Changes" comment="Загрузка моделей только при запуске сервера">
+    <list default="true" id="333ba607-ccbe-43a6-8e86-a85731fcab5e" name="Changes" comment="Добавили .env для хранения API-ключа и названия модели">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/api/LLM_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/LLM_api.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/cow_pipeline.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/cow_pipeline.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/pose.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/pose.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/tasks.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/tasks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -17,7 +22,7 @@
     <option name="myCustomStartScript" value="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="41" />
+    <option name="cachedIndexableFilesCount" value="48" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="FileTemplateManagerImpl">
@@ -202,7 +207,14 @@
       <workItem from="1778171155935" duration="989000" />
       <workItem from="1778177606280" duration="958000" />
       <workItem from="1778191297935" duration="553000" />
-      <workItem from="1778242295379" duration="1507000" />
+      <workItem from="1778242295379" duration="4266000" />
+      <workItem from="1778275532233" duration="747000" />
+      <workItem from="1778367618534" duration="100000" />
+      <workItem from="1778369571871" duration="269000" />
+      <workItem from="1778410259208" duration="648000" />
+      <workItem from="1778490123670" duration="1249000" />
+      <workItem from="1778625304091" duration="2252000" />
+      <workItem from="1778670416386" duration="1114000" />
     </task>
     <task id="LOCAL-00001" summary="Алгоритм из оригинала">
       <option name="closed" value="true" />
@@ -300,7 +312,15 @@
       <option name="project" value="LOCAL" />
       <updated>1778191598717</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="Добавили .env для хранения API-ключа и названия модели">
+      <option name="closed" value="true" />
+      <created>1778244136879</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1778244136879</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -341,7 +361,8 @@
     <MESSAGE value="Started to add Claude LLM for weight prediction" />
     <MESSAGE value="Replacing urllib usage with the Anthropetic SDK" />
     <MESSAGE value="Загрузка моделей только при запуске сервера" />
-    <option name="LAST_COMMIT_MESSAGE" value="Загрузка моделей только при запуске сервера" />
+    <MESSAGE value="Добавили .env для хранения API-ключа и названия модели" />
+    <option name="LAST_COMMIT_MESSAGE" value="Добавили .env для хранения API-ключа и названия модели" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

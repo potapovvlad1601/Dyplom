@@ -151,16 +151,18 @@ def _draw_cow_overlay(frame, cow, state):
 
 
 def _save_cow_snapshot(frame, bbox, track_id, frame_idx, output_dir, features):
-    cows_dir = os.path.join(output_dir, "cows")
-    os.makedirs(cows_dir, exist_ok=True)
+    images_dir = os.path.join(output_dir, "images")
+    features_dir = os.path.join(output_dir, "features")
+    os.makedirs(images_dir, exist_ok=True)
+    os.makedirs(features_dir, exist_ok=True)
 
     crop = crop_bbox(frame, bbox)
     if crop is None:
         return None
 
     base_name = f"cow_{track_id}_frame_{frame_idx}"
-    image_rel_path = os.path.join("cows", f"{base_name}.jpg")
-    txt_rel_path = os.path.join("cows", f"{base_name}.txt")
+    image_rel_path = os.path.join("images", f"{base_name}.jpg")
+    txt_rel_path = os.path.join("features", f"{base_name}.txt")
 
     image_path = os.path.join(output_dir, image_rel_path)
     txt_path = os.path.join(output_dir, txt_rel_path)
@@ -188,10 +190,22 @@ def _replace_extension(relative_path, new_extension):
     return f"{base_path}{new_extension}"
 
 
-def process_video(video_path, output_dir, progress_callback=None):
+def _build_prompt_relative_path(features_relative_path):
+    base_name = os.path.splitext(os.path.basename(features_relative_path))[0]
+    return os.path.join("prompts", f"{base_name}_prompt.txt").replace("\\", "/")
+
+
+def _report_progress(progress_callback, progress, stage):
+    if progress_callback:
+        progress_callback(progress, stage)
+
+
+def process_video(video_path, output_dir, client_dir, progress_callback=None):
 
     os.makedirs(output_dir, exist_ok=True)
-    annotated_video_path = os.path.join(output_dir, "annotated.mp4")
+    os.makedirs(os.path.join(output_dir, "prompts"), exist_ok=True)
+    os.makedirs(client_dir, exist_ok=True)
+    annotated_video_path = os.path.join(client_dir, "annotated.mp4")
     print("🔥 RUNNING UPDATED PIPELINE VERSION")
     # =====================
     # MODELS
@@ -240,7 +254,7 @@ def process_video(video_path, output_dir, progress_callback=None):
 
         # progress
         if progress_callback and total_frames > 0:
-            progress = int((frame_idx / total_frames) * 100)
+            progress = int((frame_idx / total_frames) * 85)
 
             if frame_idx < total_frames * 0.3:
                 stage = "tracking"
@@ -381,6 +395,15 @@ def process_video(video_path, output_dir, progress_callback=None):
     # FINAL AGGREGATION
     # =====================
     results_data = {}
+    llm_candidates = [
+        track_id
+        for track_id, data in cow_data.items()
+        if data.get("snapshot_image") and data.get("snapshot_features")
+    ]
+    total_llm_candidates = len(llm_candidates)
+    completed_llm_requests = 0
+
+    _report_progress(progress_callback, 86, "finalizing")
 
     for track_id in cow_data.keys():
 
@@ -411,10 +434,12 @@ def process_video(video_path, output_dir, progress_callback=None):
         snapshot_features = _resolve_output_path(output_dir, cow_data[track_id]["snapshot_features"])
 
         if snapshot_image and snapshot_features:
+            if total_llm_candidates > 0:
+                claude_progress = 86 + int((completed_llm_requests / total_llm_candidates) * 13)
+                _report_progress(progress_callback, claude_progress, "claude_results")
             try:
-                prompt_relative_path = _replace_extension(
-                    cow_data[track_id]["snapshot_features"],
-                    "_prompt.txt"
+                prompt_relative_path = _build_prompt_relative_path(
+                    cow_data[track_id]["snapshot_features"]
                 )
                 prompt_output_path = _resolve_output_path(output_dir, prompt_relative_path)
                 prompt_text = build_weight_prompt_from_file(snapshot_features)
@@ -430,5 +455,12 @@ def process_video(video_path, output_dir, progress_callback=None):
                 results_data[track_id]["weight_model"] = llm_result["model"]
             except Exception as error:
                 results_data[track_id]["weight_error"] = str(error)
+            finally:
+                completed_llm_requests += 1
+                if total_llm_candidates > 0:
+                    claude_progress = 86 + int((completed_llm_requests / total_llm_candidates) * 13)
+                    _report_progress(progress_callback, claude_progress, "claude_results")
+
+    _report_progress(progress_callback, 99, "finalizing")
 
     return results_data, annotated_video_path
