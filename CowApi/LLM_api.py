@@ -1,17 +1,14 @@
 import base64
 import json
 import mimetypes
-import os
 import re
 from functools import lru_cache
 
 import anthropic
-from MainServerv2.env import load_env_file
+from django.conf import settings
 
-load_env_file()
-
-DEFAULT_MODEL = os.getenv("ANTHROPIC_MODEL", "claude-sonnet-4-6")
-DEFAULT_MAX_TOKENS = int(os.getenv("ANTHROPIC_MAX_TOKENS", "3000"))
+DEFAULT_MODEL = settings.ANTHROPIC_MODEL
+DEFAULT_MAX_TOKENS = settings.ANTHROPIC_MAX_TOKENS
 
 
 PROMPT_TEMPLATE = """You are an expert in livestock weight estimation.
@@ -204,7 +201,7 @@ def request_claude_weight(image_path, prompt, api_key, model=DEFAULT_MODEL, max_
 
 
 def estimate_weight_from_files(image_path, features_path, api_key=None, model=DEFAULT_MODEL):
-    resolved_api_key = api_key or os.getenv("ANTHROPIC_API_KEY")
+    resolved_api_key = api_key or settings.ANTHROPIC_API_KEY
     if not resolved_api_key:
         raise RuntimeError("ANTHROPIC_API_KEY is not set")
 
