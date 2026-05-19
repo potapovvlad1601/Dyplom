@@ -4,19 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="333ba607-ccbe-43a6-8e86-a85731fcab5e" name="Changes" comment="">
+    <list default="true" id="333ba607-ccbe-43a6-8e86-a85731fcab5e" name="Changes" comment="rename api package, select yolo-model format, add model config">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/LLM_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/CowApi/LLM_api.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/CowApi/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/classifier.py" beforeDir="false" afterPath="$PROJECT_DIR$/CowApi/classifier.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/cow_pipeline.py" beforeDir="false" afterPath="$PROJECT_DIR$/CowApi/cow_pipeline.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/pose.py" beforeDir="false" afterPath="$PROJECT_DIR$/CowApi/pose.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/sticker_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/CowApi/sticker_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/tasks.py" beforeDir="false" afterPath="$PROJECT_DIR$/CowApi/tasks.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/tracker.py" beforeDir="false" afterPath="$PROJECT_DIR$/CowApi/tracker.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/CowApi/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/CowApi/utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/CowApi/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CowApi/LLM_api.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CowApi/classifier.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CowApi/cow_pipeline.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CowApi/pose.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CowApi/sticker_utils.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CowApi/tasks.py" beforeDir="false" afterPath="$PROJECT_DIR$/CowApi/tasks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CowApi/tracker.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CowApi/utils.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -27,7 +24,7 @@
     <option name="myCustomStartScript" value="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="42" />
+    <option name="cachedIndexableFilesCount" value="46" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="FileTemplateManagerImpl">
@@ -69,33 +66,33 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Django Server.MainServerv2.executor&quot;: &quot;Debug&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;Python.manage.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.OpenDjangoStructureViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.pycharm.django.structure.promotion.once.per.project&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;ai.playground.ignore.import.keys.banner.in.settings&quot;: &quot;true&quot;,
-    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;LLM-Branch&quot;,
-    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/potap/Projects/JetBrains Projects/PycharmProjects/Dyplom/MainServerv2/models&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;ml.llm.LLMAIWorkflowsConfigurable&quot;,
-    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Django Server.MainServerv2.executor": "Debug",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Python.manage.executor": "Run",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.OpenDjangoStructureViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.pycharm.django.structure.promotion.once.per.project": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "ai.playground.ignore.import.keys.banner.in.settings": "true",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "LLM-Branch",
+    "junie.onboarding.icon.badge.shown": "true",
+    "last_opened_file_path": "C:/Users/potap/Projects/JetBrains Projects/PycharmProjects/Dyplom/MainServerv2/models/gpu",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "ml.llm.LLMAIWorkflowsConfigurable",
+    "to.speed.mode.migration.done": "true",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecapSpentCounter">
     <option name="endsOfQuotaMs" value="1780246875658" />
     <option name="spentUsd" value="0.0710463" />
@@ -105,6 +102,7 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\potap\Projects\JetBrains Projects\PycharmProjects\Dyplom\MainServerv2\models\gpu" />
       <recent name="C:\Users\potap\Projects\JetBrains Projects\PycharmProjects\Dyplom\MainServerv2\models" />
     </key>
   </component>
@@ -225,7 +223,8 @@
       <workItem from="1779058215443" duration="173000" />
       <workItem from="1779130182595" duration="146000" />
       <workItem from="1779137516734" duration="1537000" />
-      <workItem from="1779145017312" duration="763000" />
+      <workItem from="1779145017312" duration="1111000" />
+      <workItem from="1779187989004" duration="3903000" />
     </task>
     <task id="LOCAL-00001" summary="Алгоритм из оригинала">
       <option name="closed" value="true" />
@@ -339,7 +338,15 @@
       <option name="project" value="LOCAL" />
       <updated>1778671754055</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="rename api package, select yolo-model format, add model config">
+      <option name="closed" value="true" />
+      <created>1779146084154</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1779146084154</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -382,7 +389,8 @@
     <MESSAGE value="Загрузка моделей только при запуске сервера" />
     <MESSAGE value="Добавили .env для хранения API-ключа и названия модели" />
     <MESSAGE value="Сервер отдает результат ссылки клиенту на скачивание и по ним отдает анногтированное видео и результаты по весу." />
-    <option name="LAST_COMMIT_MESSAGE" value="Сервер отдает результат ссылки клиенту на скачивание и по ним отдает анногтированное видео и результаты по весу." />
+    <MESSAGE value="rename api package, select yolo-model format, add model config" />
+    <option name="LAST_COMMIT_MESSAGE" value="rename api package, select yolo-model format, add model config" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -391,6 +399,10 @@
           <url>file://$PROJECT_DIR$/MainServerv2/asgi.py</url>
           <line>9</line>
           <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/CowApi/model_classes/__init__.py</url>
+          <option name="timeStamp" value="2" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

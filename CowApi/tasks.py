@@ -2,7 +2,7 @@ import threading
 import uuid
 import os
 import json
-from .cow_pipeline import process_video
+from .pipeline import process_video
 
 TASKS = {}
 
@@ -10,9 +10,9 @@ TASKS = {}
 def _build_client_artifact_urls(task_id):
     return {
         "annotated_video_name": "annotated.mp4",
-        "annotated_video_url": f"/api/result/{task_id}/files/annotated.mp4",
+        "annotated_video_url": f"/CowApi/result/{task_id}/files/annotated.mp4",
         "weights_file_name": "weights.json",
-        "weights_file_url": f"/api/result/{task_id}/files/weights.json",
+        "weights_file_url": f"/CowApi/result/{task_id}/files/weights.json",
     }
 
 
