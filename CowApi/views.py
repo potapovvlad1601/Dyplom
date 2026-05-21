@@ -1,4 +1,5 @@
 import os
+import uuid
 
 from django.http import FileResponse
 from django.http import JsonResponse
@@ -13,11 +14,13 @@ from .tasks import process_video_task, get_task_result
 def upload_video(request):
     if request.method == "POST":
         video = request.FILES["video"]
+        task_id = str(uuid.uuid4())
+        video_name = os.path.basename(video.name)
 
-        path = default_storage.save(f"uploads/{video.name}", video)
+        path = default_storage.save(f"results/{task_id}/{video_name}", video)
         full_path = default_storage.path(path)
 
-        task_id = process_video_task(full_path)
+        task_id = process_video_task(full_path, task_id=task_id)
 
         return JsonResponse({"task_id": task_id})
 

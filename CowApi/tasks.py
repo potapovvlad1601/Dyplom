@@ -98,8 +98,8 @@ def run_task(task_id, video_path):
         }
 
 
-def process_video_task(video_path):
-    task_id = str(uuid.uuid4())
+def process_video_task(video_path, task_id=None):
+    task_id = task_id or str(uuid.uuid4())
 
     TASKS[task_id] = {
         "task_id": task_id,
