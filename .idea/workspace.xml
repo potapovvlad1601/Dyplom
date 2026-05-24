@@ -4,13 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="333ba607-ccbe-43a6-8e86-a85731fcab5e" name="Changes" comment="Refactoring files">
-      <change afterPath="$PROJECT_DIR$/CowApi/apps.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CowApi/model_loader.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/manage.py" afterDir="false" />
+    <list default="true" id="333ba607-ccbe-43a6-8e86-a85731fcab5e" name="Changes" comment="Change path to origin video">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CowApi/pipeline/cow_pipeline.py" beforeDir="false" afterPath="$PROJECT_DIR$/CowApi/pipeline/cow_pipeline.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CowApi/tasks.py" beforeDir="false" afterPath="$PROJECT_DIR$/CowApi/tasks.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CowApi/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/CowApi/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MainServerv2/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainServerv2/settings.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -21,7 +19,7 @@
     <option name="myCustomStartScript" value="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="76" />
+    <option name="cachedIndexableFilesCount" value="56" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="FileTemplateManagerImpl">
@@ -226,7 +224,11 @@
       <workItem from="1779218123688" duration="44000" />
       <workItem from="1779222855040" duration="303000" />
       <workItem from="1779361687911" duration="78000" />
-      <workItem from="1779374170038" duration="1152000" />
+      <workItem from="1779374170038" duration="4911000" />
+      <workItem from="1779391659765" duration="1359000" />
+      <workItem from="1779441464134" duration="1046000" />
+      <workItem from="1779566029904" duration="588000" />
+      <workItem from="1779571112698" duration="1208000" />
     </task>
     <task id="LOCAL-00001" summary="Алгоритм из оригинала">
       <option name="closed" value="true" />
@@ -356,7 +358,15 @@
       <option name="project" value="LOCAL" />
       <updated>1779192023975</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="Change path to origin video">
+      <option name="closed" value="true" />
+      <created>1779375429381</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1779375429381</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -401,7 +411,8 @@
     <MESSAGE value="Сервер отдает результат ссылки клиенту на скачивание и по ним отдает анногтированное видео и результаты по весу." />
     <MESSAGE value="rename api package, select yolo-model format, add model config" />
     <MESSAGE value="Refactoring files" />
-    <option name="LAST_COMMIT_MESSAGE" value="Refactoring files" />
+    <MESSAGE value="Change path to origin video" />
+    <option name="LAST_COMMIT_MESSAGE" value="Change path to origin video" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

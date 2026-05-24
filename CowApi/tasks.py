@@ -2,6 +2,7 @@ import threading
 import uuid
 import os
 import json
+from .models import VideoTask, CowResult
 from .pipeline import process_video
 
 TASKS = {}
@@ -52,7 +53,6 @@ def _save_weight_results(client_dir, result):
         weights_payload[str(cow_id)] = {
             "weight": cow_result.get("weight"),
             "weight_confidence": cow_result.get("weight_confidence"),
-            "weight_model": cow_result.get("weight_model"),
             "weight_error": cow_result.get("weight_error"),
         }
 
@@ -77,6 +77,7 @@ def run_task(task_id, video_path):
             progress_callback=progress_callback
         )
         weights_path = _save_weight_results(client_dir, result)
+        save_results_to_db(task_id, video_path, result)
         result = _build_result_urls(task_id, result)
 
         TASKS[task_id] = {
@@ -91,6 +92,17 @@ def run_task(task_id, video_path):
         }
 
     except Exception as e:
+        try:
+            VideoTask.objects.update_or_create(
+                task_id=task_id,
+                defaults={
+                    "videofile_name": os.path.basename(video_path),
+                    "status": "error",
+                },
+            )
+        except Exception:
+            pass
+
         TASKS[task_id] = {
             "task_id": task_id,
             "status": "error",
@@ -100,6 +112,15 @@ def run_task(task_id, video_path):
 
 def process_video_task(video_path, task_id=None):
     task_id = task_id or str(uuid.uuid4())
+    video_name = os.path.basename(video_path)
+
+    VideoTask.objects.update_or_create(
+        task_id=task_id,
+        defaults={
+            "videofile_name": video_name,
+            "status": "processing",
+        },
+    )
 
     TASKS[task_id] = {
         "task_id": task_id,
@@ -124,7 +145,11 @@ def update_progress(task_id, progress, stage):
 def get_task_result(task_id):
     task = TASKS.get(task_id)
     if not task:
-        return {"task_id": task_id, "status": "not_found", "error": "not_found"}
+        video_task = VideoTask.objects.filter(task_id=task_id).first()
+        if not video_task:
+            return {"task_id": task_id, "status": "not_found", "error": "not_found"}
+
+        return _build_db_task_result(video_task)
 
     if task.get("status") == "done":
         return _build_client_result_payload(task_id)
@@ -142,3 +167,53 @@ def get_task_result(task_id):
         "progress": task.get("progress", 0),
         "stage": task.get("stage", "starting"),
     }
+
+
+def _build_db_task_result(video_task):
+    if video_task.status == "done":
+        return _build_client_result_payload(video_task.task_id)
+
+    if video_task.status == "error":
+        return {
+            "task_id": video_task.task_id,
+            "status": "error",
+            "error": "unknown_error",
+        }
+
+    return {
+        "task_id": video_task.task_id,
+        "status": "processing",
+        "progress": 0,
+        "stage": "processing",
+    }
+
+
+def save_results_to_db(task_id, video_path, result):
+    video_name = os.path.basename(video_path)
+
+    video_task, _ = VideoTask.objects.update_or_create(
+        task_id=task_id,
+        defaults={
+            "videofile_name": video_name,
+            "status": "done",
+        },
+    )
+
+    cow_ids = [int(cow_id) for cow_id in result.keys()]
+    stale_results = CowResult.objects.filter(task=video_task)
+    if cow_ids:
+        stale_results.exclude(cow_id__in=cow_ids).delete()
+    else:
+        stale_results.delete()
+
+    for cow_id, cow_data in result.items():
+        CowResult.objects.update_or_create(
+            task=video_task,
+            cow_id=int(cow_id),
+            defaults={
+                "measurements": cow_data.get("measurements"),
+                "breed": cow_data.get("breed"),
+                "weight": cow_data.get("weight"),
+                "weight_confidence": cow_data.get("weight_confidence"),
+            },
+        )
