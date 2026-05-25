@@ -25,6 +25,7 @@ if __name__ == '__main__':
 # Найти netstat -ano | findstr :8000
 
 # Запуск в консоли python manage.py runserver 0.0.0.0:8000
+# .\.venv\Scripts\python.exe -m celery -A MainServerv2 worker --loglevel=info --pool=solo
 
 # Для теста python manage.py runserver 0.0.0.0:8000 --nothreading
 

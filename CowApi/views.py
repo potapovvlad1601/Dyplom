@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.files.storage import default_storage
 from django.conf import settings
 
-from .tasks import process_video_task, get_task_result
+from .tasks import enqueue_video_task, get_task_result
 
 
 @csrf_exempt
@@ -20,7 +20,7 @@ def upload_video(request):
         path = default_storage.save(f"results/{task_id}/{video_name}", video)
         full_path = default_storage.path(path)
 
-        task_id = process_video_task(full_path, task_id=task_id)
+        task_id = enqueue_video_task(full_path, task_id=task_id)
 
         return JsonResponse({"task_id": task_id})
 

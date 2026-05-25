@@ -8,7 +8,7 @@ class ApiConfig(AppConfig):
     name = "CowApi"
 
     def ready(self):
-        if os.environ.get("RUN_MAIN") not in {None, "true"}:
+        if os.environ.get("PRELOAD_COW_MODELS") != "1":
             return
 
         from .model_loader import preload_models

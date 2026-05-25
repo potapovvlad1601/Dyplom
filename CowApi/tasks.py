@@ -1,11 +1,13 @@
-import threading
-import uuid
-import os
 import json
-from .models import VideoTask, CowResult
-from .pipeline import process_video
+import os
+import uuid
 
-TASKS = {}
+from celery import shared_task
+from django.conf import settings
+from django.db import transaction
+
+from .models import CowResult, VideoTask
+from .pipeline import process_video
 
 
 def _build_client_artifact_urls(task_id):
@@ -27,24 +29,6 @@ def _build_client_result_payload(task_id):
     }
 
 
-def _build_result_urls(task_id, result):
-    for cow_result in result.values():
-        image_path = cow_result.get("snapshot_image")
-        features_path = cow_result.get("snapshot_features")
-        prompt_path = cow_result.get("snapshot_prompt")
-
-        if image_path:
-            cow_result["snapshot_image_url"] = f"/media/results/{task_id}/{image_path}"
-
-        if features_path:
-            cow_result["snapshot_features_url"] = f"/media/results/{task_id}/{features_path}"
-
-        if prompt_path:
-            cow_result["snapshot_prompt_url"] = f"/media/results/{task_id}/{prompt_path}"
-
-    return result
-
-
 def _save_weight_results(client_dir, result):
     os.makedirs(client_dir, exist_ok=True)
 
@@ -63,54 +47,64 @@ def _save_weight_results(client_dir, result):
     return weights_path
 
 
-def run_task(task_id, video_path):
+def _update_task_state(task_id, **fields):
+    VideoTask.objects.filter(task_id=task_id).update(**fields)
+
+
+def update_progress(task_id, progress, stage):
+    normalized_progress = max(0, min(int(progress), 99))
+    _update_task_state(
+        task_id,
+        status="processing",
+        progress=normalized_progress,
+        stage=stage,
+        error="",
+    )
+
+
+def _mark_task_error(task_id, video_path, error_message):
+    VideoTask.objects.update_or_create(
+        task_id=task_id,
+        defaults={
+            "videofile_name": os.path.basename(video_path),
+            "status": "error",
+            "stage": "error",
+            "error": str(error_message),
+        },
+    )
+
+
+@shared_task(name="CowApi.process_video_task")
+def process_video_task(task_id, video_path):
     try:
+        update_progress(task_id, 1, "starting")
+
         def progress_callback(progress, stage):
             update_progress(task_id, progress, stage)
 
-        output_dir = os.path.join("media", "results", task_id)
-        client_dir = os.path.join("client", task_id)
+        output_dir = settings.MEDIA_ROOT / "results" / task_id
+        client_dir = settings.BASE_DIR / "client" / task_id
+
         result, annotated_video_path = process_video(
             video_path,
-            output_dir,
-            client_dir,
-            progress_callback=progress_callback
+            os.fspath(output_dir),
+            os.fspath(client_dir),
+            progress_callback=progress_callback,
         )
-        weights_path = _save_weight_results(client_dir, result)
+        weights_path = _save_weight_results(os.fspath(client_dir), result)
         save_results_to_db(task_id, video_path, result)
-        result = _build_result_urls(task_id, result)
 
-        TASKS[task_id] = {
+        return {
             "task_id": task_id,
-            "status": "done",
-            "progress": 100,
-            "result": result,
-            "video_path": annotated_video_path,
-            "client_dir": client_dir,
+            "annotated_video_path": annotated_video_path,
             "weights_path": weights_path,
-            **_build_client_artifact_urls(task_id),
         }
-
-    except Exception as e:
-        try:
-            VideoTask.objects.update_or_create(
-                task_id=task_id,
-                defaults={
-                    "videofile_name": os.path.basename(video_path),
-                    "status": "error",
-                },
-            )
-        except Exception:
-            pass
-
-        TASKS[task_id] = {
-            "task_id": task_id,
-            "status": "error",
-            "error": str(e)
-        }
+    except Exception as error:
+        _mark_task_error(task_id, video_path, error)
+        raise
 
 
-def process_video_task(video_path, task_id=None):
+def enqueue_video_task(video_path, task_id=None):
     task_id = task_id or str(uuid.uuid4())
     video_name = os.path.basename(video_path)
 
@@ -119,57 +113,27 @@ def process_video_task(video_path, task_id=None):
         defaults={
             "videofile_name": video_name,
             "status": "processing",
+            "progress": 0,
+            "stage": "queued",
+            "error": "",
         },
     )
 
-    TASKS[task_id] = {
-        "task_id": task_id,
-        "status": "processing",
-        "progress": 0,
-        "stage": "starting"
-    }
-
-    thread = threading.Thread(
-        target=run_task,
-        args=(task_id, video_path),
-        daemon=True
+    transaction.on_commit(
+        lambda: process_video_task.apply_async(
+            args=(task_id, video_path),
+            task_id=task_id,
+        )
     )
-    thread.start()
 
     return task_id
 
-def update_progress(task_id, progress, stage):
-    TASKS[task_id]["progress"] = progress
-    TASKS[task_id]["stage"] = stage
 
 def get_task_result(task_id):
-    task = TASKS.get(task_id)
-    if not task:
-        video_task = VideoTask.objects.filter(task_id=task_id).first()
-        if not video_task:
-            return {"task_id": task_id, "status": "not_found", "error": "not_found"}
+    video_task = VideoTask.objects.filter(task_id=task_id).first()
+    if not video_task:
+        return {"task_id": task_id, "status": "not_found", "error": "not_found"}
 
-        return _build_db_task_result(video_task)
-
-    if task.get("status") == "done":
-        return _build_client_result_payload(task_id)
-
-    if task.get("status") == "error":
-        return {
-            "task_id": task_id,
-            "status": "error",
-            "error": task.get("error", "unknown_error"),
-        }
-
-    return {
-        "task_id": task_id,
-        "status": "processing",
-        "progress": task.get("progress", 0),
-        "stage": task.get("stage", "starting"),
-    }
-
-
-def _build_db_task_result(video_task):
     if video_task.status == "done":
         return _build_client_result_payload(video_task.task_id)
 
@@ -177,14 +141,14 @@ def _build_db_task_result(video_task):
         return {
             "task_id": video_task.task_id,
             "status": "error",
-            "error": "unknown_error",
+            "error": video_task.error or "unknown_error",
         }
 
     return {
         "task_id": video_task.task_id,
         "status": "processing",
-        "progress": 0,
-        "stage": "processing",
+        "progress": video_task.progress,
+        "stage": video_task.stage or "processing",
     }
 
 
@@ -196,6 +160,9 @@ def save_results_to_db(task_id, video_path, result):
         defaults={
             "videofile_name": video_name,
             "status": "done",
+            "progress": 100,
+            "stage": "done",
+            "error": "",
         },
     )
 
