@@ -24,21 +24,49 @@ MODEL_CONFIGS = {
 }
 
 
-def _select_model_config():
-    backend = "gpu" if torch.cuda.is_available() else "cpu"
-    model_config = MODEL_CONFIGS[backend]
-    missing_models = [
+def _get_backend_preference():
+    backend = os.getenv("MODEL_BACKEND", "auto").strip().lower()
+    if backend not in {"auto", "cpu", "gpu"}:
+        raise ValueError("MODEL_BACKEND must be one of: auto, cpu, gpu")
+    return backend
+
+
+def _get_missing_models(model_config):
+    return [
         model_path
         for key, model_path in model_config.items()
         if key != "device" and not os.path.exists(model_path)
     ]
 
+
+def _validate_backend(backend):
+    model_config = MODEL_CONFIGS[backend]
+
+    if backend == "gpu" and not torch.cuda.is_available():
+        raise RuntimeError("GPU backend requested, but CUDA is not available")
+
+    missing_models = _get_missing_models(model_config)
     if missing_models:
         raise FileNotFoundError(
             f"Missing {backend.upper()} model files: {', '.join(missing_models)}"
         )
 
     return backend, model_config
+
+
+def _select_model_config():
+    backend_preference = _get_backend_preference()
+
+    if backend_preference in {"cpu", "gpu"}:
+        return _validate_backend(backend_preference)
+
+    if torch.cuda.is_available():
+        try:
+            return _validate_backend("gpu")
+        except (RuntimeError, FileNotFoundError) as error:
+            print(f"GPU backend unavailable, falling back to CPU: {error}")
+
+    return _validate_backend("cpu")
 
 
 def _build_models():

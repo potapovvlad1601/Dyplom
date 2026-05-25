@@ -5,20 +5,35 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 
+
+def _get_bool_env(name, default=False):
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _get_list_env(name, default_values):
+    raw_value = os.getenv(name)
+    if not raw_value:
+        return default_values
+    return [item.strip() for item in raw_value.split(",") if item.strip()]
+
 SECRET_KEY = os.getenv("SECRET_KEY", "secret")
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
 ANTHROPIC_MODEL = os.getenv("ANTHROPIC_MODEL", "claude-sonnet-4-6")
 ANTHROPIC_MAX_TOKENS = int(os.getenv("ANTHROPIC_MAX_TOKENS", "3000"))
 
-DEBUG = True
+DEBUG = _get_bool_env("DEBUG", default=True)
 
-ALLOWED_HOSTS = [
-
-    "127.0.0.1",
-    "localhost",
-    "192.168.0.143",  # твой локальный IP
-
-]
+ALLOWED_HOSTS = _get_list_env(
+    "ALLOWED_HOSTS",
+    [
+        "127.0.0.1",
+        "localhost",
+        "192.168.0.143",
+    ],
+)
 
 INSTALLED_APPS = [
     "django.contrib.contenttypes",
