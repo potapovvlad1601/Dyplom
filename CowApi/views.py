@@ -22,7 +22,7 @@ def upload_video(request):
 
         task_id = enqueue_video_task(full_path, task_id=task_id)
 
-        return JsonResponse({"task_id": task_id})
+        return JsonResponse({"task_id": task_id, "status": "queued"})
 
 
 def get_result(request, task_id):

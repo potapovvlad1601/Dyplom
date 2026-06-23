@@ -15,7 +15,7 @@ class VideoTask(models.Model):
 
     status = models.CharField(
         max_length=32,
-        default="processing"
+        default="queued"
     )
 
     progress = models.PositiveSmallIntegerField(

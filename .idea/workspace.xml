@@ -4,10 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="333ba607-ccbe-43a6-8e86-a85731fcab5e" name="Changes" comment="Deleted Threads from project and add Celery+Redis">
+    <list default="true" id="333ba607-ccbe-43a6-8e86-a85731fcab5e" name="Changes" comment="Using Docker for environment setup">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CowApi/model_loader.py" beforeDir="false" afterPath="$PROJECT_DIR$/CowApi/model_loader.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MainServerv2/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/MainServerv2/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CowApi/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/CowApi/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CowApi/pipeline/cow_pipeline.py" beforeDir="false" afterPath="$PROJECT_DIR$/CowApi/pipeline/cow_pipeline.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CowApi/tasks.py" beforeDir="false" afterPath="$PROJECT_DIR$/CowApi/tasks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CowApi/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/CowApi/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -18,7 +20,7 @@
     <option name="myCustomStartScript" value="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="68" />
+    <option name="cachedIndexableFilesCount" value="71" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="FileTemplateManagerImpl">
@@ -231,7 +233,19 @@
       <workItem from="1779642302923" duration="357000" />
       <workItem from="1779709707065" duration="3010000" />
       <workItem from="1779718600229" duration="2969000" />
-      <workItem from="1779723679613" duration="1964000" />
+      <workItem from="1779723679613" duration="2037000" />
+      <workItem from="1779732638835" duration="206000" />
+      <workItem from="1780181679077" duration="393000" />
+      <workItem from="1780182187658" duration="675000" />
+      <workItem from="1780221293865" duration="478000" />
+      <workItem from="1780226754977" duration="776000" />
+      <workItem from="1780234878445" duration="108000" />
+      <workItem from="1780483588218" duration="946000" />
+      <workItem from="1780514635168" duration="19000" />
+      <workItem from="1780516077869" duration="115000" />
+      <workItem from="1781095249709" duration="3036000" />
+      <workItem from="1782217741804" duration="461000" />
+      <workItem from="1782219010669" duration="2128000" />
     </task>
     <task id="LOCAL-00001" summary="Алгоритм из оригинала">
       <option name="closed" value="true" />
@@ -385,7 +399,15 @@
       <option name="project" value="LOCAL" />
       <updated>1779712738709</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="Using Docker for environment setup">
+      <option name="closed" value="true" />
+      <created>1779726985727</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1779726985727</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -433,7 +455,8 @@
     <MESSAGE value="Change path to origin video" />
     <MESSAGE value="Add using database for save results" />
     <MESSAGE value="Deleted Threads from project and add Celery+Redis" />
-    <option name="LAST_COMMIT_MESSAGE" value="Deleted Threads from project and add Celery+Redis" />
+    <MESSAGE value="Using Docker for environment setup" />
+    <option name="LAST_COMMIT_MESSAGE" value="Using Docker for environment setup" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

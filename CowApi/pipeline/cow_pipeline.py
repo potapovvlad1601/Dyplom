@@ -206,15 +206,7 @@ def process_video(video_path, output_dir, client_dir, progress_callback=None):
 
         if progress_callback and total_frames > 0:
             progress = int((frame_idx / total_frames) * 85)
-
-            if frame_idx < total_frames * 0.3:
-                stage = "tracking"
-            elif frame_idx < total_frames * 0.7:
-                stage = "pose"
-            else:
-                stage = "finalizing"
-
-            progress_callback(progress, stage)
+            progress_callback(progress, "progressing")
 
         results = tracker.track(frame)
         cows = tracker.get_cows(results)
@@ -329,7 +321,10 @@ def process_video(video_path, output_dir, client_dir, progress_callback=None):
     total_llm_candidates = len(llm_candidates)
     completed_llm_requests = 0
 
-    _report_progress(progress_callback, 86, "finalizing")
+    if total_llm_candidates > 0:
+        _report_progress(progress_callback, 86, "llm_weight")
+    else:
+        _report_progress(progress_callback, 90, "annotating")
 
     for track_id in cow_data.keys():
         breed = cow_data[track_id]["breed"]
@@ -359,7 +354,7 @@ def process_video(video_path, output_dir, client_dir, progress_callback=None):
         if snapshot_image and snapshot_features:
             if total_llm_candidates > 0:
                 claude_progress = 86 + int((completed_llm_requests / total_llm_candidates) * 13)
-                _report_progress(progress_callback, claude_progress, "claude_results")
+                _report_progress(progress_callback, claude_progress, "llm_weight")
             try:
                 prompt_relative_path = _build_prompt_relative_path(
                     cow_data[track_id]["snapshot_features"]
@@ -381,8 +376,8 @@ def process_video(video_path, output_dir, client_dir, progress_callback=None):
                 completed_llm_requests += 1
                 if total_llm_candidates > 0:
                     claude_progress = 86 + int((completed_llm_requests / total_llm_candidates) * 13)
-                    _report_progress(progress_callback, claude_progress, "claude_results")
+                    _report_progress(progress_callback, claude_progress, "llm_weight")
 
-    _report_progress(progress_callback, 99, "finalizing")
+    _report_progress(progress_callback, 99, "annotating")
 
     return results_data, annotated_video_path

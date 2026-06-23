@@ -9,6 +9,33 @@ from django.db import transaction
 from .models import CowResult, VideoTask
 from .pipeline import process_video
 
+STATUS_QUEUED = "queued"
+STATUS_PROGRESSING = "progressing"
+STATUS_LLM_WEIGHT = "llm_weight"
+STATUS_ANNOTATING = "annotating"
+STATUS_COMPLETED = "completed"
+STATUS_ERROR = "error"
+
+CLIENT_STATUSES = {
+    STATUS_QUEUED,
+    STATUS_PROGRESSING,
+    STATUS_LLM_WEIGHT,
+    STATUS_ANNOTATING,
+    STATUS_COMPLETED,
+    STATUS_ERROR,
+}
+
+LEGACY_STAGE_TO_STATUS = {
+    "queued": STATUS_QUEUED,
+    "starting": STATUS_PROGRESSING,
+    "tracking": STATUS_PROGRESSING,
+    "pose": STATUS_PROGRESSING,
+    "finalizing": STATUS_ANNOTATING,
+    "claude_results": STATUS_LLM_WEIGHT,
+    "done": STATUS_COMPLETED,
+    "error": STATUS_ERROR,
+}
+
 
 def _build_client_artifact_urls(task_id):
     return {
@@ -22,9 +49,9 @@ def _build_client_artifact_urls(task_id):
 def _build_client_result_payload(task_id):
     return {
         "task_id": task_id,
-        "status": "done",
+        "status": STATUS_COMPLETED,
         "progress": 100,
-        "stage": "done",
+        "stage": STATUS_COMPLETED,
         **_build_client_artifact_urls(task_id),
     }
 
@@ -51,13 +78,24 @@ def _update_task_state(task_id, **fields):
     VideoTask.objects.filter(task_id=task_id).update(**fields)
 
 
-def update_progress(task_id, progress, stage):
+def _normalize_client_status(status, stage=""):
+    if status in CLIENT_STATUSES:
+        return status
+    if status == "done":
+        return STATUS_COMPLETED
+    if status == "processing":
+        return LEGACY_STAGE_TO_STATUS.get(stage or "", STATUS_PROGRESSING)
+    return status
+
+
+def update_progress(task_id, progress, status):
     normalized_progress = max(0, min(int(progress), 99))
+    normalized_status = _normalize_client_status(status)
     _update_task_state(
         task_id,
-        status="processing",
+        status=normalized_status,
         progress=normalized_progress,
-        stage=stage,
+        stage=normalized_status,
         error="",
     )
 
@@ -67,8 +105,8 @@ def _mark_task_error(task_id, video_path, error_message):
         task_id=task_id,
         defaults={
             "videofile_name": os.path.basename(video_path),
-            "status": "error",
-            "stage": "error",
+            "status": STATUS_ERROR,
+            "stage": STATUS_ERROR,
             "error": str(error_message),
         },
     )
@@ -77,10 +115,10 @@ def _mark_task_error(task_id, video_path, error_message):
 @shared_task(name="CowApi.process_video_task")
 def process_video_task(task_id, video_path):
     try:
-        update_progress(task_id, 1, "starting")
+        update_progress(task_id, 1, STATUS_PROGRESSING)
 
-        def progress_callback(progress, stage):
-            update_progress(task_id, progress, stage)
+        def progress_callback(progress, status):
+            update_progress(task_id, progress, status)
 
         output_dir = settings.MEDIA_ROOT / "results" / task_id
         client_dir = settings.BASE_DIR / "client" / task_id
@@ -112,9 +150,9 @@ def enqueue_video_task(video_path, task_id=None):
         task_id=task_id,
         defaults={
             "videofile_name": video_name,
-            "status": "processing",
+            "status": STATUS_QUEUED,
             "progress": 0,
-            "stage": "queued",
+            "stage": STATUS_QUEUED,
             "error": "",
         },
     )
@@ -134,21 +172,23 @@ def get_task_result(task_id):
     if not video_task:
         return {"task_id": task_id, "status": "not_found", "error": "not_found"}
 
-    if video_task.status == "done":
+    client_status = _normalize_client_status(video_task.status, video_task.stage)
+
+    if client_status == STATUS_COMPLETED:
         return _build_client_result_payload(video_task.task_id)
 
-    if video_task.status == "error":
+    if client_status == STATUS_ERROR:
         return {
             "task_id": video_task.task_id,
-            "status": "error",
+            "status": STATUS_ERROR,
             "error": video_task.error or "unknown_error",
         }
 
     return {
         "task_id": video_task.task_id,
-        "status": "processing",
+        "status": client_status,
         "progress": video_task.progress,
-        "stage": video_task.stage or "processing",
+        "stage": client_status,
     }
 
 
@@ -159,9 +199,9 @@ def save_results_to_db(task_id, video_path, result):
         task_id=task_id,
         defaults={
             "videofile_name": video_name,
-            "status": "done",
+            "status": STATUS_COMPLETED,
             "progress": 100,
-            "stage": "done",
+            "stage": STATUS_COMPLETED,
             "error": "",
         },
     )
